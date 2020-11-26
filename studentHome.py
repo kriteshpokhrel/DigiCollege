@@ -2,15 +2,17 @@ from tkinter import *
 from teacherSettings import *
 from viewClassroom import *
 from studentSettings import *
+from studentSubject import *
 global studentColour
 studentColour = "#f2820d"
 class sHome:
-    def __init__(self, sLogName,sec):
+    def __init__(self, sLogName,sec,sID):
         global sHome1
         self.logName = sLogName
         self.sec = sec
+        self.sID =sID
         sHome1= Toplevel()
-        sHome1.geometry("640x360")
+        sHome1.geometry("480x480")
         sHome1.title("Students Home Page")
         sHome1.resizable(width=FALSE,height=FALSE)
         self.gui_1(sLogName)
@@ -116,47 +118,188 @@ class sHome:
             i += 1
 
         asmtStdnt1.mainloop()
+    def changeView(self):
+        atdnSdt1.destroy()
+        global atdnSdt2
+        atdnSdt2 = Toplevel()
+        atdnSdt2.geometry("300x200")
+        atdnSdt2.title("Attendance")
+
+        # top Frame
+        topFrame = Frame(atdnSdt2)
+        topFrame.pack(side=TOP, fill=X)
+        # header
+        textDis = " Attendance"
+        self.sHeaderAtd = Label(topFrame, text=textDis, bg=studentColour, fg='white',
+                                font=("Sans serif", 16, "bold"), pady=6)  # text add
+        self.sHeaderAtd.pack(fill=X)  # pack is a must
+
+        conn = connection.cursor()
+
+        # extract attendance
+        sql = 'SELECT Subject_ID, Status, count(*) from attendance WHERE Student_Name = "{}" and Student_ID ="{}" GROUP BY Status,Subject_ID' \
+            .format(self.logName, self.sID)
+        res = conn.execute(sql)
+        ww = conn.fetchall()
+        print(ww)
+        details = ["Subject_ID", "Status", "Count"]
+        i = 0
+        width1 = ["20", "20", "10"]
+
+        #creating frames for insertion  btm frame
+        btmFrame = Frame(atdnSdt2)
+        btmFrame.pack(fill=X)
+        btmFrame.place(y=50)
+        conn = connection.cursor()
+        print(self.logName, self.sID)
+
+        # creating headings
+        for j in range(len(details)):
+            e = Entry(btmFrame, width=width1[j], bg=studentColour)
+            e.grid(row=i, column=j)
+            e.insert(END, details[j])
+        i += 1
+        # inserting datasframe1,pc
+        for atdSub in ww:
+            for j in range(len(atdSub)):
+                e = Entry(btmFrame, width=width1[j], bg='white')
+                e.grid(row=i, column=j)
+                e.insert(END, atdSub[j])
+            i += 1
+
+        atdnSdt2.mainloop()
+
+    def atdnceStdnt(self):
+        global atdnSdt1
+        atdnSdt1 = Toplevel()
+        atdnSdt1.geometry("540x400")
+        atdnSdt1.title("Attendance")
+
+        # top Frame
+        topFrame = Frame(atdnSdt1)
+        topFrame.pack(side=TOP, fill=X)
+        # header
+        textDis = " Attendance"
+        self.sHeaderAtd = Label(topFrame, text=textDis, bg=studentColour, fg='white',
+                             font=("Sans serif", 16, "bold"), pady=6)  # text add
+        self.sHeaderAtd.pack(fill=X)  # pack is a must
+
+        # btm frame
+        btmFrame = Frame(atdnSdt1)
+        btmFrame.pack(fill=X)
+        btmFrame.place(y=50)
+        conn = connection.cursor()
+        # btm frame
+        realBtmFrame = Frame(atdnSdt1)
+        realBtmFrame.pack(fill=X,side=BOTTOM)
+        conn = connection.cursor()
+        print(self.logName, self.sID)
+
+        #Change View button
+        self.chgViewIcn =PhotoImage(file = "button_changeViewAttendance.png")
+        self.chgViewIcBtn =Button(realBtmFrame, image = self.chgViewIcn,borderwidth = 0,command = self.changeView)
+        self.chgViewIcBtn.pack()
+
+        #extract attendance
+        sql = 'SELECT Subject_ID, Attendance_Hour, Status, By_Teacher FROM attendance WHERE Student_Name = "{}" and Student_ID ="{}"'\
+            .format(self.logName,self.sID)
+        res = conn.execute(sql)
+        ww = conn.fetchall()
+        print(ww)
+        details = ["Subject_ID","Hour","Status","By_Teacher"]
+        i = 0
+        width1 = ["20", "15", "15", "20"]
+        # creating headings
+        for j in range(len(details)):
+            e = Entry(btmFrame, width=width1[j], bg=studentColour)
+            e.grid(row=i, column=j)
+            e.insert(END, details[j])
+        i += 1
+        # inserting datasframe1,pc
+        for atdHstry in ww:
+            for j in range(len(atdHstry)):
+                e = Entry(btmFrame, width=width1[j], bg='white')
+                e.grid(row=i, column=j)
+                e.insert(END, atdHstry[j])
+            i += 1
 
 
+        atdnSdt1.mainloop()
+
+    def stdntSub(self):
+        s1= studentSub(self.logName,self.sec,self.sID)
+        s1
     def gui_1(self,sLogName):
 
         #header
         textDis = 'Welcome ' + sLogName
         self.tHeader = Label(sHome1, text=textDis, bg=studentColour, fg='white',
-                             font=("Sans serif", 16, "bold"), pady=6)  # text add
+                             font=("Sans serif", 18, "bold"), pady=8)  # text add
         self.tHeader.pack(fill=X)  # pack is a must
+
+        x1Icn,x2Icn=70,270
+        x1Btn,x2Btn=62,260
+        y1Icn,y2Icn=70,260
+        y1Btn,y2Btn = 200,390
 
         # books Issued button
         self.bkIssuedBtnIcon = PhotoImage(file = "button_booksIssued.png")
         self.bkIssuedBtn = Button(sHome1, image = self.bkIssuedBtnIcon, borderwidth = 0,command = self.booksIssued)
         self.bkIssuedBtn.pack()
-        self.bkIssuedBtn.place(x= '62',y= '200')
+        self.bkIssuedBtn.place(x= x1Btn,y= y1Btn)
 
         # assignment button
         self.asmtBtnIcon = PhotoImage(file = "button_assignmentStudent.png")
         self.asmtBtn = Button(sHome1, image = self.asmtBtnIcon, borderwidth = 0,command = self.asmtStdnt)
         self.asmtBtn.pack()
-        self.asmtBtn.place(x= '240',y= '200')
+        self.asmtBtn.place(x= x1Btn,y= y2Btn)
+
+        # attendance button
+        self.atdnceBtnIcon = PhotoImage(file = "button_attendanceStudent.png")
+        self.atdnceBtn = Button(sHome1, image = self.atdnceBtnIcon, borderwidth = 0,command = self.atdnceStdnt)
+        self.atdnceBtn.pack()
+        self.atdnceBtn.place(x= x2Btn,y= y1Btn )
+
+        # subjects button
+        self.subBtnIcon = PhotoImage(file = "button_subjectsStudent.png")
+        self.subBtn = Button(sHome1, image = self.subBtnIcon, borderwidth = 0,command = self.stdntSub)
+        self.subBtn.pack()
+        self.subBtn.place(x= x2Btn,y= y2Btn )
+
 
         # book Issued photo
         self.yClrPhoto= PhotoImage(file = "icon_booksIssuedStudent.png")
         yClrPhotoLbl = Label(sHome1, image= self.yClrPhoto)
         yClrPhotoLbl.pack()
-        yClrPhotoLbl.place(x= "70", y= "70")
+        yClrPhotoLbl.place(x= x1Icn,y= y1Icn )
 
         # assignment photo
         self.asmtPhoto= PhotoImage(file = "icon_asssignmentStudent.png")
         asmtPhotoLbl = Label(sHome1, image= self.asmtPhoto)
         asmtPhotoLbl.pack()
-        asmtPhotoLbl.place(x= "250", y= "70")
+        asmtPhotoLbl.place(x= x1Icn, y= y2Icn)
+
+        #attendance photo
+        self.atdncePhoto = PhotoImage(file ='icon_attendanceStudent.png')
+        atdncePhotoLbl =Label(sHome1, image = self.atdncePhoto)
+        atdncePhotoLbl.pack()
+        atdncePhotoLbl.place(x=x2Icn, y=y1Icn)
+
+        #subject photo
+        self.subPhoto = PhotoImage(file ='icon_subStudent.png')
+        subPhotoLbl =Label(sHome1, image = self.atdncePhoto)
+        subPhotoLbl.pack()
+        subPhotoLbl.place(x=x2Icn, y=y2Icn)
+
+
 
         # settings button
         self.settingsBtnIcon = PhotoImage(file ="button_settingsStudent.png")
         self.settingsBtn = Button(sHome1, image = self.settingsBtnIcon, borderwidth = 0,command = self.settingsOpen)
         self.settingsBtn.pack()
-        self.settingsBtn.place(x= '585',y= '308')
+        self.settingsBtn.place(x=x2Icn+150, y='60')
 
 
 if __name__ == "__main__":
-    t1= sHome("","")
+    t1= sHome("Kritesh Pokhrel","5C","123")
     t1

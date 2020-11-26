@@ -72,7 +72,7 @@ def start_gui_homepage():
             password = pass1.get()
             if connection.is_connected():
                 mycursor = connection.cursor()
-                sql = 'SELECT Sltn, t_name, dept from teachers where t_name = "{}" and Password = "{}"'.format(tLogName,
+                sql = 'SELECT Sltn, t_name, t_id,dept from teachers where t_name = "{}" and Password = "{}"'.format(tLogName,
                                                                                                          password)
                 mycursor.execute(sql)
                 wName = mycursor.fetchall()
@@ -83,14 +83,15 @@ def start_gui_homepage():
                     a = wName[0]
                     sal = a[0]
                     tLgName = a[1]
-                    dept = a[2]
-                    #teacherLogin.destroy()
+                    tID = a[2]
+                    dept = a[3]
+                    teacherLogin.destroy()
                     if not( dept == "Library"):
-                        th1 = tHome(sal,tLgName)
+                        th1 = tHome(sal,tLgName,tID)
                         th1
                     else:
                         # library open
-                        l1= lHome(sal,tLgName)
+                        l1= lHome(sal,tLgName,tID)
                         l1
                 mycursor.close()
             else:
@@ -164,7 +165,7 @@ def start_gui_homepage():
             password = pass1.get()
             if connection.is_connected():
                 mycursor = connection.cursor()
-                sql = 'SELECT Sltn, S_name from students where S_name = "{}" and Password = "{}"'.format(sLogName,
+                sql = 'SELECT Sltn, S_name, Section,S_ID from students where S_name = "{}" and Password = "{}"'.format(sLogName,
                                                                                                          password)
                 mycursor.execute(sql)
                 wName = mycursor.fetchall()
@@ -172,8 +173,11 @@ def start_gui_homepage():
                     messagebox.showinfo("Login Error", "Please enter a valid ID and Password!", parent=studentLogin)
                 else:
                     # if success
+                    ret = wName[0]
+                    sec = ret[2]
+                    sID = ret[3]
                     studentLogin.destroy()
-                    st1 = sHome(sLogName)
+                    st1 = sHome(sLogName,sec,sID)
                     st1.gui_1
                 mycursor.close()
             else:

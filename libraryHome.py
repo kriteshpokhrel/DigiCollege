@@ -10,7 +10,7 @@ libColour = '#188ce5'
 
 
 class lHome:
-    def __init__(self, sal, logName):
+    def __init__(self, sal, logName,tID):
         self.sal = sal
         self.logName = logName
         global libHome
@@ -437,4 +437,4 @@ class lHome:
 
 
 if __name__ == '__main__':
-    l2 = lHome("asd", "sd")
+    l2 = lHome("asd", "sd","")

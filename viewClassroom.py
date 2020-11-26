@@ -8,9 +8,10 @@ teacherColour = "#069ce5"
 
 
 class vClass:
-    def __init__(self, tLogName, sec1):
+    def __init__(self, tLogName, sec1,tID):
         self.tLogName = tLogName
         self.sec1 = sec1
+        self.tID = tID
         global viewClass
         viewClass = Toplevel()
         viewClass.geometry("900x480")
@@ -30,8 +31,7 @@ class vClass:
             self.sec1)
         res = conn.execute(sql)
         ww = conn.fetchall()
-        i = 1
-        print(ww)
+
         details = ["S_Name", "S_ID", "Dept", "Section", "DOB", "C_No", "Address", "Email"]
         i = 0
         width1 = ["20", "15", "10", "8", "20", "15", "25", "50"]

@@ -3,11 +3,14 @@ import datetime
 from tkinter import messagebox
 from tkcalendar import *
 from db_connect import *
+from attdScreen import *
 import time
 global teacherColour
 teacherColour = "#069ce5"
 class att:
-    def __init__(self):
+    def __init__(self,fTname,tID):
+        self.fTname = fTname
+        self.tID = tID
         global atStdnt
         atStdnt = Toplevel()
         atStdnt.title("Attendance")
@@ -15,97 +18,122 @@ class att:
         self.gui_1()
         atStdnt.mainloop()
 
-    def atFinal(self,atd):
-        self.atd = atd
-        print("inserting attendance")
-        if connection.is_connected():
-            print("cinneced")
-            cur = connection.cursor()
-            sql = 'INSERT INTO attendance values("{}","{}","{}","{}","{}","{}")'\
-                .format(self.ithStudentName,self.ithStudentID,self.sec,self.subject,self.hour,self.atd)
-            cur.execute(sql)
-            connection.commit()
-            cur.close()
-    def attScrn(self):
 
+    def atReg(self):
+        i=0
+        for self.ithStudent in self.students:
+            self.ithStudentName = self.ithStudent[0]
+            self.ithStudentID = self.ithStudent[1]
+            self.ithStudentAtd  =self.abPr1[i].get()
+            i+=1
+
+            #sql write
+            if connection.is_connected():
+                cur = connection.cursor()
+                sql = 'INSERT INTO attendance values("{}","{}","{}","{}","{}","{}","{}")' \
+                    .format(self.ithStudentName, self.ithStudentID, self.sec, self.subject, self.hour, self.ithStudentAtd,self.fTname)
+                cur.execute(sql)
+                connection.commit()
+                cur.close()
+
+        messagebox.showinfo("Done","Attendance has been registered",parent = attSc)
+        attSc.destroy()
+
+
+    def attScrn(self):
         self.sec = self.section1.get()
         self.subject = self.sub1.get()
         self.date = self.cal1.get()
         self.hour = self.hr1.get()
+        print(self.sec,self.sub1,self.date,self.hour)
 
-        print(self.subject+self.sec+self.date+self.hour)
         if self.sec and self.subject and self.date and self.hour:
 
             if connection.is_connected():
+
                 cursor = connection.cursor()
-                sql = 'SELECT Student_Name, Student_ID from studentSubject where section = "{}" and subject_code ="{}"'\
-                    .format(self.sec,self.subject)
+                sql = 'SELECT Teacher_Name, Teacher_ID, Subject_Code from teacherSubject where Teacher_ID = "{}" and Subject_code ="{}"' \
+                    .format(self.tID,self.subject)
                 cursor.execute(sql)
-                self.students= cursor.fetchall()
-
-                print(len(self.students))
-                if not self.students:
-                    messagebox.showerror("Error", "No students founds registered for this course",parent = atStdnt)
-
+                self.isReg = cursor.fetchall()
+                if not self.isReg:
+                    messagebox.showerror("Error","You have not registered for this course",parent = atStdnt)
                 else:
-                    global attSc
-                    attSc = Toplevel()
-                    attSc.geometry("320x180")
-                    attSc.title("Attendance")
-                    x1, x2 = 20, 130
-                    y1, gap = 60, 30
 
-                    # header
-                    self.tHeader = Label(attSc, text="Attendance", bg=teacherColour, fg='white',
-                                         font=("Sans serif", 16, "bold"), pady=6)  # text add
-                    self.tHeader.pack(fill=X)  # pack is a must
+                    sql = 'SELECT Student_Name, Student_ID from studentSubject where section = "{}" and subject_code ="{}"' \
+                        .format(self.sec, self.subject)
+                    cursor.execute(sql)
+                    self.students = cursor.fetchall()
 
-                    # name lbl
-                    self.nameLbl = Label(attSc, text="Student Name: ", font=("Sans Serif", 11))
-                    self.nameLbl.pack()
-                    self.nameLbl.place(x=x1, y=y1)
+                    if not self.students:
+                        messagebox.showerror("Error", "No students founds registered for this course",parent = atStdnt)
 
-                    # USN Lbl
-                    self.sIDLbl = Label(attSc, text="Student ID: ", font=("Sans Serif", 11))
-                    self.sIDLbl.pack()
-                    self.sIDLbl.place(x=x1, y=y1 + gap)
+                    else:
+                        global attSc
+                        attSc = Toplevel()
+                        attSc.geometry("500x300")
+                        attSc.title("Attendance")
+                        x1, x2 = 20, 130
+                        y1, gap = 60, 30
 
-                    '''this is the part of code where everything sucks
-                        i cant make for loop to pause until an action is taken
-                        may almighty god give me the knowledge to  find a solution for this'''
+                        # header
+                        self.tHeader = Label(attSc, text="Attendance", bg=teacherColour, fg='white',
+                                             font=("Sans serif", 16, "bold"), pady=6)  # text add
+                        self.tHeader.pack(fill=X)  # pack is a must
 
-                    self.ithStudent = self.students[0]
-                    self.ithStudentName = self.ithStudent[0]
-                    self.ithStudentID = self.ithStudent[1]
+                        gap = 40
+                        x1 = 20
+                        y1 = 100
+                        x2 = 200
+                        x3 = 360
+                        self.studentNameLbl = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                        self.sIDLbl1 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                        self.abPr1 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                        self.abPsntList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                        # name lbl
+                        self.nameLbl = Label(attSc, text="Student Name: ", font=("Sans Serif", 15, 'bold'))
+                        self.nameLbl.pack()
+                        self.nameLbl.place(x=x1, y=50)
 
-                    self.isPresentIcn = PhotoImage(file='button_presentAttendance.png')
-                    self.isPresentBtn = Button(attSc, image=self.isPresentIcn, borderwidth=0,
-                                                   command =lambda: [ f() for f in [self.atd  ,]])
-                    self.isPresentBtn.pack()
-                    self.isPresentBtn.place(x=x1 + 40, y=y1 + 2 * gap)
+                        # USN Lbl
+                        self.sIDLbl = Label(attSc, text="Student ID: ", font=("Sans Serif", 15, 'bold'))
+                        self.sIDLbl.pack()
+                        self.sIDLbl.place(x=x2, y=50)
 
-                    # absent btn
-                    self.isAbsentIcn = PhotoImage(file='button_absentAttendance.png')
-                    self.isAbsentBtn = Button(attSc, image=self.isAbsentIcn, borderwidth=0,
-                                                  command=self.atFinal("Absent"))
-                    self.isAbsentBtn.pack()
-                    self.isAbsentBtn.place(x=x2 + 40, y=y1 + 2 * gap)
+                        i = 0
+                        for self.ithStudent in self.students:
+                            self.ithStudentName = self.ithStudent[0]
+                            self.ithStudentID = self.ithStudent[1]
+                            print(self.ithStudentName, self.ithStudentID)
 
-                    # Name Label
-                    self.studentNameLbl = Label(attSc, text=self.ithStudentName, font=("Sans Serif", 13, 'bold'))
-                    self.studentNameLbl.pack()
-                    self.studentNameLbl.place(x=x2, y=y1)
+                            # Name Label
+                            self.studentNameLbl[i] = Label(attSc, text=self.ithStudentName, font=("Sans Serif", 12))
+                            self.studentNameLbl[i].pack()
+                            self.studentNameLbl[i].place(x=x1, y=y1 + i * gap)
 
-                    # ID Label
-                    self.sIDLbl1 = Label(attSc, text=self.ithStudentID, font=("Sans Serif", 13, 'bold'))
-                    self.sIDLbl1.pack()
-                    self.sIDLbl1.place(x=x2, y=y1 + gap)
+                            # ID Label
+                            self.sIDLbl1[i] = Label(attSc, text=self.ithStudentID, font=("Sans Serif", 12))
+                            self.sIDLbl1[i].pack()
+                            self.sIDLbl1[i].place(x=x2, y=y1 + i * gap)
 
+                            # Absent Present
+                            self.abPr1[i] = StringVar()
+                            self.abPr1[i].set("Present")
+                            self.abPsntList[i] = ttk.Combobox(attSc, textvariable=self.abPr1[i])
+                            self.abPsntList[i]['values'] = ("Present", "Absent")
+                            self.abPsntList[i].pack()
+                            self.abPsntList[i].place(x=x3, y=y1 + i * gap, width=70)
 
+                            i += 1
 
-                    attSc.mainloop()
+                        # submit btn
+                        self.submitBtnIcn = PhotoImage(file='button_submitAttendance.png')
+                        self.submitBtn = Button(attSc, image=self.submitBtnIcn, borderwidth=0, command=self.atReg)
+                        self.submitBtn.pack()
+                        self.submitBtn.place(x=x2 - 50, y=y1 + i * gap + 10)
+                        attSc.mainloop()
         else:
-            messagebox.showerror("Error","Please enter all fields")
+            messagebox.showerror("Error","Please fill all details",parent = atStdnt)
     def gui_1(self):
 
         x1, x2 = 20, 120
@@ -167,5 +195,5 @@ class att:
         self.submitBtn.place(x=x2, y=y1+4*gapY)
 
 if __name__ == "__main__":
-    a2= att()
+    a2= att("Chempa","")
     a2
