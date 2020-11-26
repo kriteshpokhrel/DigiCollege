@@ -16,6 +16,7 @@ class studentSub:
         global stuSub1
         stuSub1 = Toplevel()
         stuSub1.geometry("700x300")
+        stuSub1.resizable(width=FALSE, height=FALSE)
         self.gui_1()
         stuSub1.mainloop()
 
@@ -24,17 +25,22 @@ class studentSub:
         if not self.addSub:
             messagebox.showwarning("Field Empty", "Please enter Subject Code.")
         else:
-
-            ###SQL COMMAND HERE
-            sql = 'INSERT INTO studentsubject VALUES ("{}","{}","{}","{}")' \
-                .format(self.logName,self.sID,self.sec,self.addSub)
-            cursor = connection.cursor()
-            cursor.execute(sql)
-            connection.commit()
-            messagebox.showinfo("Done", "Subject has been added successfully,")
-            stuSub1.destroy()
-            s1= studentSub(self.logName,self.sec,self.sID)
-            s1
+            cursor = connection.cursor(buffered=TRUE)
+            sql = 'SELECT * from subject where S_Code ="{}"'.format(self.addSub)
+            subExist = cursor.execute(sql)
+            if not subExist:
+                messagebox.showerror("Error", "Enter valid Subject Code.", parent=stuSub1)
+            else:
+                ###SQL COMMAND HERE
+                sql = 'INSERT INTO studentsubject VALUES ("{}","{}","{}","{}")' \
+                    .format(self.logName,self.sID,self.sec,self.addSub)
+                cursor = connection.cursor()
+                cursor.execute(sql)
+                connection.commit()
+                messagebox.showinfo("Done", "Subject has been added successfully,")
+                stuSub1.destroy()
+                s1= studentSub(self.logName,self.sec,self.sID)
+                s1
 
     def delSub(self):
         self.delSub = self.subDel1.get()
@@ -44,7 +50,7 @@ class studentSub:
             ###SQL COMMAND HERE
             sql = 'DELETE FROM studentsubject  where Student_Name = "{}" and Student_ID = "{}" and Section = "{}" and Subject_Code ="{}"' \
                 .format(self.logName,self.sID,self.sec,self.delSub)
-            cursor = connection.cursor()
+            cursor = connection.cursor(buffered=TRUE)
             cursor.execute(sql)
             connection.commit()
             connection.commit()

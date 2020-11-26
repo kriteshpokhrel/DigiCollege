@@ -191,7 +191,6 @@ class teacherReg:
         self.teacherRegisterButton.place(x=x2, y=470)
         tReg.mainloop()
 
-
 if __name__ == "__main__":
     v1 = teacherReg()
     v1.gui_1()

@@ -14,6 +14,7 @@ class teacherSub:
         global tSub1
         tSub1 = Toplevel()
         tSub1.geometry("730x300")
+        tSub1.resizable(width=FALSE,height=FALSE)
         self.gui_1()
         tSub1.mainloop()
 
@@ -22,16 +23,20 @@ class teacherSub:
         if not self.addSub:
             messagebox.showwarning("Field Empty", "Please enter Subject Code.",parent= tSub1)
         else:
-            ###SQL COMMAND HERE
-            sql = 'INSERT INTO teachersubject VALUES ("{}","{}","{}")' \
-                .format(self.logName,self.tID,self.addSub)
-            cursor = connection.cursor()
-            cursor.execute(sql)
-            connection.commit()
-            messagebox.showinfo("Done", "Subject has been added successfully,",parent= tSub1)
-            tSub1.destroy()
-            t1= teacherSub(self.logName,self.tID)
-            t1
+            cursor = connection.cursor(buffered=TRUE)
+            sql = 'SELECT * from subject where S_Code ="{}"'.format(self.addSub)
+            subExist =cursor.execute(sql)
+            if not subExist:
+                messagebox.showerror("Error","Enter valid Subject Code.",parent = tSub1)
+            else:
+                ###SQL COMMAND HERE
+                sql = 'INSERT INTO teachersubject VALUES ("{}","{}","{}")' \
+                    .format(self.logName,self.tID,self.addSub)
+                connection.commit()
+                messagebox.showinfo("Done", "Subject has been added successfully,",parent= tSub1)
+                tSub1.destroy()
+                t1= teacherSub(self.logName,self.tID)
+                t1
 
     def delSub(self):
         self.delSub = self.subDel1.get()
@@ -41,7 +46,7 @@ class teacherSub:
             ###SQL COMMAND HERE
             sql = 'DELETE FROM teachersubject  where Teacher_Name = "{}" and Teacher_ID = "{}"  and Subject_Code ="{}"' \
                 .format(self.logName,self.tID,self.delSub)
-            cursor = connection.cursor()
+            cursor = connection.cursor(buffered=TRUE)
             cursor.execute(sql)
             connection.commit()
             connection.commit()
@@ -108,7 +113,7 @@ class teacherSub:
         btmFrame = Frame(tSub1)
         btmFrame.pack(fill=X)
         btmFrame.place(x=5,y=y1+3*gap)
-        conn = connection.cursor()
+        conn = connection.cursor(buffered=TRUE)
         sql = 'SELECT t.Teacher_Name, t.Teacher_ID,  t.Subject_Code, s.S_Name FROM teachersubject  t, subject s  WHERE t.Teacher_Name = "{}" and t.Teacher_ID = "{}" and s.S_Code = t.Subject_Code'.format(
             self.logName,self.tID)
         res = conn.execute(sql)
@@ -130,6 +135,7 @@ class teacherSub:
                 e.grid(row=i, column=j)
                 e.insert(END, subject[j])
             i += 1
+
 if __name__ == "__main__":
     s1= teacherSub("Chempa","1234")
     s1

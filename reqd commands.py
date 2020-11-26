@@ -1,1 +1,0 @@
-teacherButton = Button(homePage,image=teacherLoginBtn, borderwidth=0, command = lambda: [ f() for f in [teacherLogin1, homePage.destroy()]])

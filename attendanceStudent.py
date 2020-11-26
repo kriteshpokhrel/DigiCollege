@@ -51,7 +51,7 @@ class att:
 
             if connection.is_connected():
 
-                cursor = connection.cursor()
+                cursor = connection.cursor(buffered=TRUE)
                 sql = 'SELECT Teacher_Name, Teacher_ID, Subject_Code from teacherSubject where Teacher_ID = "{}" and Subject_code ="{}"' \
                     .format(self.tID,self.subject)
                 cursor.execute(sql)

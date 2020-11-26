@@ -26,6 +26,7 @@ class sHome:
         listIsBook = Toplevel()
         listIsBook.geometry('1100x500')
         listIsBook.title("Books Issued")
+        listIsBook.resizable(width=FALSE,height=FALSE)
 
         # frame1
         frame1 = Frame(listIsBook)
@@ -81,7 +82,7 @@ class sHome:
         asmtStdnt1 = Toplevel()
         asmtStdnt1.geometry('930x300')
         asmtStdnt1.title("Assignments")
-
+        asmtStdnt1.resizable(width=FALSE,height=FALSE)
         # top Frame
         topFrame = Frame(asmtStdnt1)
         topFrame.pack(side=TOP, fill=X)
@@ -124,7 +125,7 @@ class sHome:
         atdnSdt2 = Toplevel()
         atdnSdt2.geometry("300x200")
         atdnSdt2.title("Attendance")
-
+        atdnSdt2.resizable(width=FALSE,height=FALSE)
         # top Frame
         topFrame = Frame(atdnSdt2)
         topFrame.pack(side=TOP, fill=X)
@@ -174,7 +175,7 @@ class sHome:
         atdnSdt1 = Toplevel()
         atdnSdt1.geometry("540x400")
         atdnSdt1.title("Attendance")
-
+        atdnSdt1.resizable(width=FALSE,height=FALSE)
         # top Frame
         topFrame = Frame(atdnSdt1)
         topFrame.pack(side=TOP, fill=X)
@@ -290,8 +291,6 @@ class sHome:
         subPhotoLbl =Label(sHome1, image = self.atdncePhoto)
         subPhotoLbl.pack()
         subPhotoLbl.place(x=x2Icn, y=y2Icn)
-
-
 
         # settings button
         self.settingsBtnIcon = PhotoImage(file ="button_settingsStudent.png")

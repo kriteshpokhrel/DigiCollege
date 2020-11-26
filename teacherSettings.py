@@ -7,9 +7,10 @@ global teacherColour
 teacherColour = "#069ce5"
 
 class settingsTeacher:
-    def __init__(self, tLogName):
+    def __init__(self, tLogName,tID):
         global settings1
         self.tLogName = tLogName
+        self.tID = tID
         print((self.tLogName))
         settings1 = Toplevel()
         settings1.title("Settings")
@@ -246,7 +247,6 @@ class settingsTeacher:
         self.delAcntBtn = Button(settings1, image=self.delAcntBtnIcon, borderwidth=0, command=self.delAct)
         self.delAcntBtn.pack()
         self.delAcntBtn.place(x=40, y=220)
-
 
 if __name__ == '__main__':
     s1 = settingsTeacher("")

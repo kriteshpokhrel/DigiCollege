@@ -15,6 +15,7 @@ class asmt1:
         asst = Toplevel()
         asst.title('Assignment')
         asst.geometry("550x320")
+        asst.resizable(width=FALSE,height=FALSE)
         self.gui_1()
         asst.mainloop()
 

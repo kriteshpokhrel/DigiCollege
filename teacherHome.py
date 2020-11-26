@@ -114,10 +114,6 @@ class tHome:
         self.settingsBtn.pack()
         self.settingsBtn.place(x= x2Icn+150,y= '50')
 
-
-
-
-
 if __name__ == "__main__":
     t1= tHome("","","")
     t1
