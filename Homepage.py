@@ -93,7 +93,6 @@ def start_gui_homepage():
                         # library open
                         l1= lHome(sal,tLgName,tID)
                         l1
-                mycursor.close()
             else:
                 print("DBMS not connected")
 
@@ -169,7 +168,8 @@ def start_gui_homepage():
                                                                                                          password)
                 mycursor.execute(sql)
                 wName = mycursor.fetchall()
-                if not wName:                    messagebox.showinfo("Login Error", "Please enter a valid ID and Password!", parent=studentLogin)
+                if not wName:
+                    messagebox.showinfo("Login Error", "Please enter a valid ID and Password!", parent=studentLogin)
                 else:
                     # if success
                     ret = wName[0]

@@ -6,15 +6,16 @@ from Homepage import *
 
 global studentColour
 studentColour = "#f2820d"
-
+0
 class settingsStudent:
-    def __init__(self, sLogName):
+    def __init__(self, sLogName,sID):
         global settings1
         self.sLogName = sLogName
-        print((self.sLogName))
+        self.sID = sID
         settings1 = Toplevel()
         settings1.title("Settings")
-        settings1.geometry("310x240")
+        settings1.geometry("310x170")
+        settings1.resizable(width=FALSE, height= FALSE)
         self.gui_1()
         settings1.mainloop()
 
@@ -35,8 +36,8 @@ class settingsStudent:
                 if newPwd1 == newPwd2:
                     if newPwd1 != curPwd:
                         ###SQL COMMAND HERE
-                        mySql_insert_query = 'UPDATE students SET password = "{}" WHERE S_Name = "{}"'.format(
-                            newPwd1, self.sLogName)
+                        mySql_insert_query = 'UPDATE students SET password = "{}" WHERE S_Name = "{}" and S_ID = "{}"'.format(
+                            newPwd1, self.sLogName,self.sID)
                         cursor = connection.cursor()
                         cursor.execute(mySql_insert_query)
                         connection.commit()
@@ -124,11 +125,22 @@ class settingsStudent:
                                        icon='warning', parent=settings1)
         if cnfrm == 'yes':
             ###SQL COMMAND HERE
-            mySql_insert_query = 'DELETE FROM students WHERE S_Name = "{}"'.format(
-                self.sLogName)
+            # del from registration
+            sql = 'DELETE FROM students WHERE S_Name = "{}" and S_ID = "{}"'.format(
+                self.sLogName,self.sID)
             cursor = connection.cursor()
-            cursor.execute(mySql_insert_query)
+            cursor.execute(sql)
             connection.commit()
+            cursor.close()
+
+            #del from subjects
+            sql = 'DELETE FROM studentsubject WHERE Student_Name = "{}" and Student_ID = "{}"'.format(
+                self.sLogName,self.sID)
+            cursor = connection.cursor()
+            cursor.execute(sql)
+            connection.commit()
+            cursor.close()
+
             messagebox.showinfo("Account Deleted", "Your account has been deleted successfully", parent=settings1)
             settings1.destroy()
 
@@ -151,5 +163,5 @@ class settingsStudent:
 
 
 if __name__ == '__main__':
-    s1 = settingsStudent("")
+    s1 = settingsStudent("","")
     s1

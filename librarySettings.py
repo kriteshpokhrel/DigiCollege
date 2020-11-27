@@ -3,10 +3,8 @@ from db_connect import *
 from tkinter import messagebox
 from teacherHome import *
 from Homepage import *
-global teacherColour
-teacherColour = "#069ce5"
 
-class settingsTeacher:
+class settingsLibrary:
     def __init__(self, tLogName,tID):
         global settings1
         self.tLogName = tLogName
@@ -14,7 +12,7 @@ class settingsTeacher:
         print((self.tLogName))
         settings1 = Toplevel()
         settings1.title("Settings")
-        settings1.geometry("310x220")
+        settings1.geometry("310x180")
         settings1.resizable(width=FALSE, height= FALSE)
         self.gui_1()
         settings1.mainloop()
@@ -120,53 +118,6 @@ class settingsTeacher:
 
         chgPwd.mainloop()
 
-    def cTeacher(self):
-        self.secNew = self.enterSec.get()
-        mySql_insert_query = 'UPDATE teachers SET Class_teacherOf = "{}" WHERE T_Name = "{}" and T_ID = "{}"'.format(
-            self.secNew, self.tLogName,self.tID)
-        cursor = connection.cursor()
-        cursor.execute(mySql_insert_query)
-        connection.commit()
-        if (self.secNew != "None") and (self.secNew != "none"):
-            messagebox.showinfo("Success", "You have been appointed as class teacher of {}.".format(self.secNew),
-                                parent=appotCt)
-        else:
-            messagebox.showinfo("Success", "Class teacher removed.", parent=appotCt)
-        appotCt.destroy()
-
-    def apptCt(self):
-        global appotCt
-        appotCt = Toplevel()
-        appotCt.geometry("280x130")
-        appotCt.title("Class Teacher Appoint")
-        # header
-        self.apptHeader = Label(appotCt, text="Appoint as Class Teacher", bg=teacherColour, fg='white',
-                                font=("Sans serif", 13, "bold"), pady=6)  # text add
-        self.apptHeader.pack(fill=X)  # pack is a must
-
-        # entersec
-        self.enterSecLbl = Label(appotCt, text="Please enter Section: ", font=("Sans Serif", '11'))
-        self.enterSecLbl.pack()
-        self.enterSecLbl.place(x=15, y=50)
-
-        # entersecNone
-        self.noneLbl = Label(appotCt, text="(None to remove)", font=("Sans Serif", '8'))
-        self.noneLbl.pack()
-        self.noneLbl.place(x=157, y=52.5)
-
-        # section entry
-        self.enterSec = Entry(appotCt)
-        self.enterSec.pack()
-        self.enterSec.place(x=15, y=80, width=145, height=20)
-
-        # confirm button
-        self.settingsBtnIcon = PhotoImage(file="button_confirmTeacher.png")
-        self.settingsBtn = Button(appotCt, image=self.settingsBtnIcon, borderwidth=0, command=self.cTeacher)
-        self.settingsBtn.pack()
-        self.settingsBtn.place(x=170, y=78)
-
-        appotCt.mainloop()
-
     def delAct(self):
         cnfrm = messagebox.askquestion('Delete Account', 'Are you sure that you want to delete your account?',
                                        icon='warning', parent=settings1)
@@ -179,13 +130,6 @@ class settingsTeacher:
             cursor.execute(mySql_insert_query)
             connection.commit()
 
-            #del from subjects
-            sql = 'DELETE FROM teachersubject WHERE Teacher_Name = "{}" and Teacher_ID = "{}"'.format(
-                self.tLogName, self.tID)
-            cursor = connection.cursor()
-            cursor.execute(sql)
-            connection.commit()
-            cursor.close()
             messagebox.showinfo("Account Deleted", "Your account has been deleted successfully", parent=settings1)
             settings1.destroy()
 
@@ -201,19 +145,13 @@ class settingsTeacher:
         self.changePwdBtn.pack()
         self.changePwdBtn.place(x=40, y=70)
 
-        # appoint as class teacher
-        self.cTeacherBtnIcon = PhotoImage(file="button_appointClassTeacher.png")
-        self.cTeacherBtn = Button(settings1, image=self.cTeacherBtnIcon, borderwidth=0, command=self.apptCt)
-        self.cTeacherBtn.pack()
-        self.cTeacherBtn.place(x=40, y=120)
-
-
         # delete account
         self.delAcntBtnIcon = PhotoImage(file="button_deleteAccountTeacher.png")
         self.delAcntBtn = Button(settings1, image=self.delAcntBtnIcon, borderwidth=0, command=self.delAct)
         self.delAcntBtn.pack()
-        self.delAcntBtn.place(x=40, y=170)
+        self.delAcntBtn.place(x=40, y=120)
+
 
 if __name__ == '__main__':
-    s1 = settingsTeacher("","")
+    s1 = settingsLibrary("","")
     s1

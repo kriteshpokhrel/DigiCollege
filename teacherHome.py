@@ -45,6 +45,7 @@ class tHome:
         as1
     def subjects(self):
         sub1= teacherSub(self.logName,self.tID)
+        sub1
     def gui_1(self,tLogName):
 
         #header
@@ -105,8 +106,6 @@ class tHome:
         self.sub = Label(tHome1, image=self.subPhoto)
         self.sub.pack()
         self.sub.place(x=x2Icn, y=y2Icn)
-
-
 
         # settings button
         self.settingsBtnIcon = PhotoImage(file ="button_settingsTeacher.png")

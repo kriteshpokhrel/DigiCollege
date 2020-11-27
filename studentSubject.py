@@ -11,8 +11,6 @@ class studentSub:
         self.logName = logName
         self.sec =sec
         self.sID = sID
-        print(self.sID,self.logName,self.sec)
-
         global stuSub1
         stuSub1 = Toplevel()
         stuSub1.geometry("700x300")
@@ -23,21 +21,22 @@ class studentSub:
     def addSub(self):
         self.addSub = self.subAdd1.get()
         if not self.addSub:
-            messagebox.showwarning("Field Empty", "Please enter Subject Code.")
+            messagebox.showwarning("Field Empty", "Please enter Subject Code.",stuSub1)
         else:
             cursor = connection.cursor(buffered=TRUE)
             sql = 'SELECT * from subject where S_Code ="{}"'.format(self.addSub)
-            subExist = cursor.execute(sql)
+            cursor.execute(sql)
+            subExist = cursor.fetchall()
             if not subExist:
                 messagebox.showerror("Error", "Enter valid Subject Code.", parent=stuSub1)
             else:
                 ###SQL COMMAND HERE
+                cursor = connection.cursor(buffered=TRUE)
                 sql = 'INSERT INTO studentsubject VALUES ("{}","{}","{}","{}")' \
                     .format(self.logName,self.sID,self.sec,self.addSub)
-                cursor = connection.cursor()
                 cursor.execute(sql)
                 connection.commit()
-                messagebox.showinfo("Done", "Subject has been added successfully,")
+                messagebox.showinfo("Done", "Subject has been added successfully,",parent = stuSub1)
                 stuSub1.destroy()
                 s1= studentSub(self.logName,self.sec,self.sID)
                 s1
@@ -45,7 +44,7 @@ class studentSub:
     def delSub(self):
         self.delSub = self.subDel1.get()
         if not self.delSub:
-            messagebox.showwarning("Field Empty", "Please enter Subject Code.")
+            messagebox.showwarning("Field Empty", "Please enter Subject Code.",parent = stuSub1)
         else:
             ###SQL COMMAND HERE
             sql = 'DELETE FROM studentsubject  where Student_Name = "{}" and Student_ID = "{}" and Section = "{}" and Subject_Code ="{}"' \
