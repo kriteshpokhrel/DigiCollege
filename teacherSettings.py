@@ -3,18 +3,20 @@ from db_connect import *
 from tkinter import messagebox
 from teacherHome import *
 from Homepage import *
+from digiFaceTeacher import *
 global teacherColour
 teacherColour = "#069ce5"
 
 class settingsTeacher:
-    def __init__(self, tLogName,tID):
+    def __init__(self,sal, tLogName,tID):
         global settings1
         self.tLogName = tLogName
         self.tID = tID
-        print((self.tLogName))
+        self.sal = sal
         settings1 = Toplevel()
         settings1.title("Settings")
-        settings1.geometry("310x300")
+        settings1.geometry("310x280")
+        settings1.resizable(width=FALSE, height= FALSE)
         self.gui_1()
         settings1.mainloop()
 
@@ -24,7 +26,7 @@ class settingsTeacher:
         newPwd2 = self.nPwd2.get()
         if connection.is_connected():
             mycursor = connection.cursor()
-            sql = 'SELECT * from teachers where t_name = "{}" and Password = "{}"'.format('Chempa', curPwd)
+            sql = 'SELECT * from teachers where t_name = "{}" and Password = "{}" and T_ID = "{}"'.format(self.tLogName, curPwd,self.tID)
             mycursor.execute(sql)
             wName = mycursor.fetchall()
             if not wName:
@@ -34,12 +36,10 @@ class settingsTeacher:
                 # if success
                 if newPwd1 == newPwd2:
                     if newPwd1 != curPwd:
-                        print('succhess')
 
                         ###SQL COMMAND HERE
-
-                        mySql_insert_query = 'UPDATE teachers SET password = "{}" WHERE T_Name = "{}"'.format(
-                            newPwd1, self.tLogName)
+                        mySql_insert_query = 'UPDATE teachers SET password = "{}" WHERE T_Name = "{}" and T_ID ="{}"'.format(
+                            newPwd1, self.tLogName,self.tID)
                         cursor = connection.cursor()
                         cursor.execute(mySql_insert_query)
                         connection.commit()
@@ -123,8 +123,8 @@ class settingsTeacher:
 
     def cTeacher(self):
         self.secNew = self.enterSec.get()
-        mySql_insert_query = 'UPDATE teachers SET Class_teacherOf = "{}" WHERE T_Name = "{}"'.format(
-            self.secNew, self.tLogName)
+        mySql_insert_query = 'UPDATE teachers SET Class_teacherOf = "{}" WHERE T_Name = "{}" and T_ID = "{}"'.format(
+            self.secNew, self.tLogName,self.tID)
         cursor = connection.cursor()
         cursor.execute(mySql_insert_query)
         connection.commit()
@@ -138,7 +138,7 @@ class settingsTeacher:
     def apptCt(self):
         global appotCt
         appotCt = Toplevel()
-        appotCt.geometry("280x150")
+        appotCt.geometry("280x130")
         appotCt.title("Class Teacher Appoint")
         # header
         self.apptHeader = Label(appotCt, text="Appoint as Class Teacher", bg=teacherColour, fg='white',
@@ -173,50 +173,33 @@ class settingsTeacher:
                                        icon='warning', parent=settings1)
         if cnfrm == 'yes':
             ###SQL COMMAND HERE
-            mySql_insert_query = 'DELETE FROM teachers  WHERE T_Name = "{}"'.format(
-                self.tLogName)
+            # del from teachers
+            mySql_insert_query = 'DELETE FROM teachers  WHERE T_Name = "{}" and T_ID = "{}"'.format(
+                self.tLogName,self.tID)
             cursor = connection.cursor()
             cursor.execute(mySql_insert_query)
             connection.commit()
+
+            #del from subjects
+            sql = 'DELETE FROM teachersubject WHERE Teacher_Name = "{}" and Teacher_ID = "{}"'.format(
+                self.tLogName, self.tID)
+            cursor = connection.cursor()
+            cursor.execute(sql)
+            connection.commit()
+            cursor.close()
             messagebox.showinfo("Account Deleted", "Your account has been deleted successfully", parent=settings1)
             settings1.destroy()
-    def chooseSub1(self):
-        global chSub
-        chSub = Toplevel()
-        chSub.geometry("320x200")
-        chSub.title("Choose Subject")
-        #header
-        self.chSubHeader = Label(chSub, text="Choose Subject", bg=teacherColour, fg='white',
-                                    font=("Sans serif", 14, "bold"), pady=6)  # text add
-        self.chSubHeader.pack(fill=X)  # pack is a must
-
-        #SubCode lbl
-        self.suCode = Label(chSub,text ="Subject Code: ",font =("Sans serif", 11))
-        self.suCode.pack()
-        self.suCode.place(x=10,y=50)
-
-        #SubName lbl
-        self.suName = Label(chSub,text ="Subject Name: ",font =("Sans serif", 11))
-        self.suName.pack()
-        self.suName.place(x=10,y=90)
-
-        #subCode text field
-        self.subCode =Entry(chSub)
-        self.subCode.pack()
-        self.subCode.place(x=120,y=50,width =150)
-
-        #subName text field
-        self.subName =Entry(chSub)
-        self.subName.pack()
-        self.subName.place(x=120,y=90,width=150)
-
-        #submit BTn
-        self.submitBtnIcn =PhotoImage(file = 'button_submitTeacherSmall.png')
-        self.submitBtn = Button(chSub, image = self.submitBtnIcn, borderwidth = 0,command = print("ASD"))
-        self.submitBtn.pack()
-        self.submitBtn.place(x=120, y=120)
-
-        chSub.mainloop()
+    def dFace(self):
+        #checking if data already exists
+        mycursor = connection.cursor()
+        sql = 'SELECT * from digiFaceTeacher where t_ID = "{}" '.format(self.tID)
+        mycursor.execute(sql)
+        dExists= mycursor.fetchall()
+        if dExists:
+            messagebox.showerror("Error","DigiFace has already been setup",parent = settings1)
+        else:
+            d1= digiFaceTeacher1(self.sal,self.tLogName,self.tID)
+            d1
 
     def gui_1(self):
         #header
@@ -236,18 +219,19 @@ class settingsTeacher:
         self.cTeacherBtn.pack()
         self.cTeacherBtn.place(x=40, y=120)
 
-        # choose subject
-        self.chSubBtnIcon = PhotoImage(file="button_chooseSubject.png")
-        self.chSubBtn = Button(settings1, image=self.chSubBtnIcon, borderwidth=0, command=self.chooseSub1)
-        self.chSubBtn.pack()
-        self.chSubBtn.place(x=40, y=170)
 
         # delete account
         self.delAcntBtnIcon = PhotoImage(file="button_deleteAccountTeacher.png")
         self.delAcntBtn = Button(settings1, image=self.delAcntBtnIcon, borderwidth=0, command=self.delAct)
         self.delAcntBtn.pack()
-        self.delAcntBtn.place(x=40, y=220)
+        self.delAcntBtn.place(x=40, y=170)
+
+        # digiFace account
+        self.dFaceBtnIcon = PhotoImage(file="button_setUpDigifaceTeacher.png")
+        self.dFaceBtn = Button(settings1, image=self.dFaceBtnIcon, borderwidth=0, command=self.dFace)
+        self.dFaceBtn.pack()
+        self.dFaceBtn.place(x=40, y=220)
 
 if __name__ == '__main__':
-    s1 = settingsTeacher("")
+    s1 = settingsTeacher("","","")
     s1

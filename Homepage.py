@@ -7,6 +7,10 @@ from db_connect import *
 from tkcalendar import *
 from studentHome import *
 from libraryHome import *
+from faceDetectLoginTeacher import *
+from digiFaceTeacher import *
+from faceDetectLoginStudent import *
+from digiFaceStudent import *
 homeColour = "#17768B"
 global teacherColour
 teacherColour = "#069ce5"
@@ -66,6 +70,13 @@ def start_gui_homepage():
         pass1.pack()
         pass1.place(x=140, y=120, width=170)
 
+        # or label
+        orLbl = Label(teacherLogin, text="or", font=("Sans Serif", 9))
+        orLbl.pack()
+        orLbl.place(x=165, y=185)
+
+
+
         def tLogin():
             global tLogName
             tLogName = user.get()
@@ -93,13 +104,21 @@ def start_gui_homepage():
                         # library open
                         l1= lHome(sal,tLgName,tID)
                         l1
-                mycursor.close()
             else:
                 print("DBMS not connected")
 
         def registerTeacher():
             tReg1 = teacherReg()
             tReg1.gui_1()
+        def dLogin():
+            d1= dFaceTeacher()
+            d1
+
+        # digiFace button
+        dFaceLoginBtn = PhotoImage(file='button_digifaceTeacher.png')
+        dFaceLoginButton = Button(teacherLogin, image=dFaceLoginBtn, borderwidth=0, command=dLogin)
+        dFaceLoginButton.pack()
+        dFaceLoginButton.place(x=130, y=215)
 
         # teacher login button
         teacherLoginBtn = PhotoImage(file='button_loginTeacher.png')
@@ -159,6 +178,11 @@ def start_gui_homepage():
         pass1.pack()
         pass1.place(x=140, y=120, width=170)
 
+        # or label
+        orLbl = Label(studentLogin, text="or", font=("Sans Serif", 9))
+        orLbl.pack()
+        orLbl.place(x=165, y=185)
+
         def sLogin():
 
             sLogName = user.get()
@@ -169,14 +193,16 @@ def start_gui_homepage():
                                                                                                          password)
                 mycursor.execute(sql)
                 wName = mycursor.fetchall()
-                if not wName:                    messagebox.showinfo("Login Error", "Please enter a valid ID and Password!", parent=studentLogin)
+                if not wName:
+                    messagebox.showinfo("Login Error", "Please enter a valid ID and Password!", parent=studentLogin)
                 else:
                     # if success
                     ret = wName[0]
+                    sal = ret[0]
                     sec = ret[2]
                     sID = ret[3]
                     studentLogin.destroy()
-                    st1 = sHome(sLogName,sec,sID)
+                    st1 = sHome(sal,sLogName,sec,sID)
                     st1.gui_1
                 mycursor.close()
             else:
@@ -184,6 +210,16 @@ def start_gui_homepage():
         def registerStudent():
             sReg1 = studentReg()
             sReg1.gui_1
+
+        def dLogin():
+            d1= dFaceStudent()
+            d1
+
+        # digiFace button
+        dFaceLoginBtn = PhotoImage(file='button_digifaceStudent.png')
+        dFaceLoginButton = Button(studentLogin, image=dFaceLoginBtn, borderwidth=0, command=dLogin)
+        dFaceLoginButton.pack()
+        dFaceLoginButton.place(x=130, y=215)
 
         # student login button
         studentLoginBtn = PhotoImage(file='button_loginStudent.png')

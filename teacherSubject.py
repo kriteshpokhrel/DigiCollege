@@ -9,7 +9,6 @@ class teacherSub:
     def __init__(self,logName,tID):
         self.logName = logName
         self.tID = tID
-        print(self.tID,self.logName)
 
         global tSub1
         tSub1 = Toplevel()
@@ -25,14 +24,17 @@ class teacherSub:
         else:
             cursor = connection.cursor(buffered=TRUE)
             sql = 'SELECT * from subject where S_Code ="{}"'.format(self.addSub)
-            subExist =cursor.execute(sql)
+            cursor.execute(sql)
+            subExist = cursor.fetchall()
             if not subExist:
                 messagebox.showerror("Error","Enter valid Subject Code.",parent = tSub1)
             else:
                 ###SQL COMMAND HERE
                 sql = 'INSERT INTO teachersubject VALUES ("{}","{}","{}")' \
                     .format(self.logName,self.tID,self.addSub)
-                connection.commit()
+                cursor = connection.cursor(buffered=TRUE)
+                cursor.execute(sql)
+                cursor.close()
                 messagebox.showinfo("Done", "Subject has been added successfully,",parent= tSub1)
                 tSub1.destroy()
                 t1= teacherSub(self.logName,self.tID)
@@ -46,7 +48,7 @@ class teacherSub:
             ###SQL COMMAND HERE
             sql = 'DELETE FROM teachersubject  where Teacher_Name = "{}" and Teacher_ID = "{}"  and Subject_Code ="{}"' \
                 .format(self.logName,self.tID,self.delSub)
-            cursor = connection.cursor(buffered=TRUE)
+            cursor = connection.cursor(buffered=TRUE,dictionary=True)
             cursor.execute(sql)
             connection.commit()
             connection.commit()

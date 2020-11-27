@@ -70,12 +70,13 @@ class studentReg:
         self.nameLbl = Label(sReg, text="Salutation: ", font=("Sans Serif", 10))
         self.nameLbl.pack()
         self.nameLbl.place(x=x1, y=132)
+
         # Name Lbl
         self.nameLbl = Label(sReg, text="Name: ", font=("Sans Serif", fsizeLbl))
         self.nameLbl.pack()
         self.nameLbl.place(x=x1, y=y1)
 
-        # Teacher ID
+        # student ID
         self.tIdLbl = Label(sReg, text="Student ID: ", font=("Sans Serif", fsizeLbl))
         self.tIdLbl.pack()
         self.tIdLbl.place(x=x1, y=y1 + gap)

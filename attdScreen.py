@@ -14,7 +14,6 @@ class att1:
             self.ithStudentID = self.ithStudent[1]
             self.ithStudentAtd  =self.abPr1[i].get()
             i+=1
-            print((self.ithStudentName,self.ithStudentID,self.ithStudentAtd))
 
         self.sec = "5C"
         self.subject = "19CSE45"
@@ -70,7 +69,6 @@ class att1:
 
                         self.ithStudentName = self.ithStudent[0]
                         self.ithStudentID = self.ithStudent[1]
-                        print(self.ithStudentName, self.ithStudentID)
 
                         # Name Label
                         self.studentNameLbl[i] = Label(attSc, text=self.ithStudentName, font=("Sans Serif", 12))

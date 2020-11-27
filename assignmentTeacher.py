@@ -56,7 +56,6 @@ class asmt1:
             endSub,endDate)
         res = conn.execute(sql)
         asstAll = conn.fetchall()
-        print(endSub, endDate)
         if not asstAll:
             messagebox.showerror("Error","Please enter correct data.",parent=asstView)
         else:
@@ -74,7 +73,6 @@ class asmt1:
             self.logName)
         res = conn.execute(sql)
         asstAll = conn.fetchall()
-        print(asstAll)
         if asstAll:
             global asstView
             asstView = Toplevel()
@@ -155,7 +153,6 @@ class asmt1:
         x1, x2 = 20, 160
         y1, gap = 60, 30
         width1 = 200
-        print("60")
         # subject lbl
         self.subLbl = Label(asst, text="Subject Code: ", font=("Sans Serif", 11))
         self.subLbl.pack()

@@ -4,7 +4,7 @@ from tkcalendar import DateEntry
 import datetime
 from db_connect import *
 from tkinter import messagebox
-
+from librarySettings import *
 global libColor
 libColour = '#188ce5'
 
@@ -13,6 +13,7 @@ class lHome:
     def __init__(self, sal, logName,tID):
         self.sal = sal
         self.logName = logName
+        self.tID = tID
         global libHome
         libHome = Toplevel()
         libHome.title("Library Home")
@@ -27,28 +28,26 @@ class lHome:
         iDate = self.cal1.get()
         rDate = self.cal2.get()
         remarks = self.rem1.get()
-        print(sName, sId, bId, iDate, rDate, remarks)
 
         # check if student name and ID is matches
         if connection.is_connected():
-            mycursor = connection.cursor()
-            sql = 'SELECT Sltn, S_name from students where S_name = "{}" and Password = "{}"'.format(sName,
-                                                                                                     sId)
+            mycursor = connection.cursor(buffered=True)
+            sql = 'SELECT * from students where S_name = "{}" and S_ID = "{}"'.format(sName,sId)
             mycursor.execute(sql)
             sRece = mycursor.fetchall()
+            mycursor.close()
             if not sRece:
                 messagebox.showinfo("Field Error", "Student not found in database, please enter proper data",
                                     parent=isBook)
             else:
                 # check if 3 books already issued
-                mycursor = connection.cursor()
+                mycursor = connection.cursor(buffered=True)
                 sql = 'SELECT BookName, BookID, Student_ID from booksissued where Student_ID = "{}" '.format(sId)
                 mycursor.execute(sql)
                 noOfIssued = mycursor.rowcount
                 if noOfIssued > 3:
                     messagebox.showerror("Error", "You have already issued 3 books", parent=isBook)
                 else:
-
                     mycursor = connection.cursor(buffered=True)
                     sql = 'SELECT BookName, BookID from books where BookID = "{}" '.format(bId)
                     mycursor.execute(sql)
@@ -179,7 +178,7 @@ class lHome:
                 messagebox.showerror("Entry Error", "Book Issue not found in database, please enter proper data",
                                      parent=retBook)
             else:
-                messagebox.showinfo("Completed", "Book has been returned.")
+                messagebox.showinfo("Completed", "Book has been returned.",parent=retBook)
                 retBook.destroy()
 
     def returnBook1(self):
@@ -235,10 +234,82 @@ class lHome:
 
         retBook.mainloop()
 
+    def delBook(self):
+        self.delBookID = self.id1.get()
+        #sql code
+        sql = 'DELETE FROM books WHERE BookID = "{}" '.format(
+            self.delBookID)
+        cursor = connection.cursor()
+        cursor.execute(sql)
+        connection.commit()
+        cursor.close()
+        delRowCount = cursor.rowcount
+        if delRowCount == 0:
+            messagebox.showerror("Error", "Book not found in database.",
+                                 parent=listBDB)
+        else:
+            messagebox.showinfo("Book Deleted", "Book has been deleted from database", parent=listBDB)
+    def viewAllIsdBk(self):
+        # sql
+        global listIsBook
+        listIsBook = Toplevel()
+        listIsBook.geometry('1100x500')
+        listIsBook.title("Books Issued")
+        listIsBook.resizable(width=FALSE, height=FALSE)
+
+        # frame1
+        frame1 = Frame(listIsBook)
+        frame1.pack(side=TOP, fill=X)
+        # DB header
+        dbHeader = Label(frame1, text="Books Issued", bg=libColour, fg='white',
+                         font=("Sans serif", 20, "bold"), pady=10)  # text add
+        dbHeader.pack(fill=X)  # pack is a must
+
+        # frame1
+        frame2 = Frame(listIsBook)
+        frame2.pack(fill=X)
+        frame2.place(y=100)
+
+        # DB SQL
+        conn = connection.cursor()
+        sql = 'SELECT * FROM booksIssued '
+        res = conn.execute(sql)
+        ww = conn.fetchall()
+        i = 1
+        totalBooksIssued = len(ww)
+        details = ["BookName", "BookID", "Student_Name", "Student_ID", "Issue_date", "Return_Date", "Remarks"]
+        # display total books
+        if totalBooksIssued == 0:
+            listIsBook.destroy()
+            messagebox.showerror("Error", "No books have been issued", parent=libHome)
+        else:
+            totBooksLbl = Label(listIsBook, text='Total Books Issued: ' + str(totalBooksIssued), font=('bold', 15))
+            totBooksLbl.pack()
+            totBooksLbl.place(x=10, y=65)
+            i = 0
+            width1 = ["50", "15", "30", "15", "15", "15", "50"]
+            # creating headings
+            for j in range(len(details)):
+                e = Entry(frame2, width=width1[j], bg=libColour)
+                e.grid(row=i, column=j)
+                e.insert(END, details[j])
+            i += 1
+            # inserting datas
+            j = 0
+            for books in ww:
+                for j in range(len(books)):
+                    e = Entry(frame2, width=width1[j], bg='white')
+                    e.grid(row=i, column=j)
+                    e.insert(END, books[j])
+                i += 1
+            listIsBook.mainloop()
+
+
+
     def listDB(self):
         global listBDB
         listBDB = Toplevel()
-        listBDB.geometry('650x700')
+        listBDB.geometry('650x400')
         listBDB.title("Books")
         # frame1
         frame1 = Frame(listBDB)
@@ -252,7 +323,7 @@ class lHome:
         # frame1
         frame2 = Frame(listBDB)
         frame2.pack(fill=X)
-        frame2.place(y=120)
+        frame2.place(y=150)
 
         # DB SQL
         conn = connection.cursor()
@@ -260,11 +331,10 @@ class lHome:
         res = conn.execute(sql)
         ww = conn.fetchall()
         i = 1
-        print(ww)
         totalBooks = len(ww)
         details = ["BookName", "BookID", "Author", "Edition"]
-        # display total books
 
+        # display total books
         totBooksLbl = Label(listBDB, text='Total Books: ' + str(totalBooks), font=('bold', 15))
         totBooksLbl.pack()
         totBooksLbl.place(x=10, y=65)
@@ -283,6 +353,28 @@ class lHome:
                 e.grid(row=i, column=j)
                 e.insert(END, books[j])
             i += 1
+
+        # bookID Lbl
+        self.nameLbl = Label(listBDB, text="Book ID: ", font=("Sans Serif", 12,'bold'))
+        self.nameLbl.pack()
+        self.nameLbl.place(x=10,y=110)
+
+        # Book ID entry field
+        self.id1 = Entry(listBDB)
+        self.id1.pack()
+        self.id1.place (x=100,y=110,width=150)
+
+        #del Book button
+        self.delBookIcn =PhotoImage(file = "button_deleteBookLibrary.png")
+        self.delBookIcnBtn =Button(listBDB, image = self.delBookIcn,borderwidth = 0,command = self.delBook)
+        self.delBookIcnBtn.pack()
+        self.delBookIcnBtn.place(x=270,y=107)
+
+        #view all issued button
+        self.viewAlIssuedIcn =PhotoImage(file = "button_allBookIssued.png")
+        self.viewAlIssuedIcnBtn =Button(listBDB, image = self.viewAlIssuedIcn,borderwidth = 0,command = self.viewAllIsdBk)
+        self.viewAlIssuedIcnBtn.pack()
+        self.viewAlIssuedIcnBtn.place(x=470,y=107)
 
         listBDB.mainloop()
 
@@ -320,7 +412,6 @@ class lHome:
         adBook = Toplevel()
         adBook.title("Add Book")
         adBook.geometry("450x280")
-        print("sdfsdf")
         x1, x2 = 40, 130
         y1, gapY = 80, 35
         width1 = 250
@@ -376,7 +467,9 @@ class lHome:
         self.adBookSubmitBtn.place(x=x2, y=y1 + 3 * gapY + 30)
 
         adBook.mainloop()
-
+    def settingsOpen(self):
+        s1= settingsLibrary(self.sal,self.logName,self.tID)
+        s1
     def gui_1(self):
         # header
         textDis = 'Welcome ' + self.sal + " " + self.logName
@@ -434,6 +527,13 @@ class lHome:
         self.bookDbBtnLbl = Button(libHome, image=self.bookDbBtn, borderwidth=0, command=self.listDB)
         self.bookDbBtnLbl.pack()
         self.bookDbBtnLbl.place(x=x1Btn + gapX, y=y1Btn + gapY)
+
+
+        # settings button
+        self.settingsBtnIcon = PhotoImage(file ="button_settingsTeacher.png")
+        self.settingsBtn = Button(libHome, image = self.settingsBtnIcon, borderwidth = 0,command = self.settingsOpen)
+        self.settingsBtn.pack()
+        self.settingsBtn.place(x='350',y= '50')
 
 
 if __name__ == '__main__':

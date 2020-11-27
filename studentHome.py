@@ -6,11 +6,12 @@ from studentSubject import *
 global studentColour
 studentColour = "#f2820d"
 class sHome:
-    def __init__(self, sLogName,sec,sID):
+    def __init__(self,sal, sLogName,sec,sID):
         global sHome1
         self.logName = sLogName
         self.sec = sec
         self.sID =sID
+        self.sal = sal
         sHome1= Toplevel()
         sHome1.geometry("480x480")
         sHome1.title("Students Home Page")
@@ -18,11 +19,11 @@ class sHome:
         self.gui_1(sLogName)
         sHome1.mainloop()
     def settingsOpen(self):
-        s1= settingsStudent(self.logName)
+        s1= settingsStudent(self.sal,self.logName,self.sec,self.sID)
         s1
     def booksIssued(self):
         #sql
-        global listBDB
+        global listIsBook
         listIsBook = Toplevel()
         listIsBook.geometry('1100x500')
         listIsBook.title("Books Issued")
@@ -39,7 +40,7 @@ class sHome:
         # frame1
         frame2 = Frame(listIsBook)
         frame2.pack(fill=X)
-        frame2.place(y=120)
+        frame2.place(y=100)
 
         # DB SQL
         conn = connection.cursor()
@@ -47,11 +48,9 @@ class sHome:
         res = conn.execute(sql)
         ww = conn.fetchall()
         i = 1
-        print(ww)
         totalBooksIssued = len(ww)
         details = ["BookName", "BookID", "Student_Name","Student_ID", "Issue_date", "Return_Date","Remarks"]
         # display total books
-        print(totalBooksIssued)
         if totalBooksIssued ==0:
             listIsBook.destroy()
             messagebox.showerror("Error","No books have been issued",parent = sHome1)
@@ -142,7 +141,6 @@ class sHome:
             .format(self.logName, self.sID)
         res = conn.execute(sql)
         ww = conn.fetchall()
-        print(ww)
         details = ["Subject_ID", "Status", "Count"]
         i = 0
         width1 = ["20", "20", "10"]
@@ -152,7 +150,6 @@ class sHome:
         btmFrame.pack(fill=X)
         btmFrame.place(y=50)
         conn = connection.cursor()
-        print(self.logName, self.sID)
 
         # creating headings
         for j in range(len(details)):
@@ -173,7 +170,7 @@ class sHome:
     def atdnceStdnt(self):
         global atdnSdt1
         atdnSdt1 = Toplevel()
-        atdnSdt1.geometry("540x400")
+        atdnSdt1.geometry("440x400")
         atdnSdt1.title("Attendance")
         atdnSdt1.resizable(width=FALSE,height=FALSE)
         # top Frame
@@ -189,12 +186,10 @@ class sHome:
         btmFrame = Frame(atdnSdt1)
         btmFrame.pack(fill=X)
         btmFrame.place(y=50)
-        conn = connection.cursor()
-        # btm frame
+
+        # real btm frame
         realBtmFrame = Frame(atdnSdt1)
         realBtmFrame.pack(fill=X,side=BOTTOM)
-        conn = connection.cursor()
-        print(self.logName, self.sID)
 
         #Change View button
         self.chgViewIcn =PhotoImage(file = "button_changeViewAttendance.png")
@@ -202,11 +197,11 @@ class sHome:
         self.chgViewIcBtn.pack()
 
         #extract attendance
+        conn = connection.cursor()
         sql = 'SELECT Subject_ID, Attendance_Hour, Status, By_Teacher FROM attendance WHERE Student_Name = "{}" and Student_ID ="{}"'\
             .format(self.logName,self.sID)
         res = conn.execute(sql)
         ww = conn.fetchall()
-        print(ww)
         details = ["Subject_ID","Hour","Status","By_Teacher"]
         i = 0
         width1 = ["20", "15", "15", "20"]
@@ -267,7 +262,6 @@ class sHome:
         self.subBtn.pack()
         self.subBtn.place(x= x2Btn,y= y2Btn )
 
-
         # book Issued photo
         self.yClrPhoto= PhotoImage(file = "icon_booksIssuedStudent.png")
         yClrPhotoLbl = Label(sHome1, image= self.yClrPhoto)
@@ -288,7 +282,7 @@ class sHome:
 
         #subject photo
         self.subPhoto = PhotoImage(file ='icon_subStudent.png')
-        subPhotoLbl =Label(sHome1, image = self.atdncePhoto)
+        subPhotoLbl =Label(sHome1, image = self.subPhoto)
         subPhotoLbl.pack()
         subPhotoLbl.place(x=x2Icn, y=y2Icn)
 

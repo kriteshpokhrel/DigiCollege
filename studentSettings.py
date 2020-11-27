@@ -3,18 +3,22 @@ from db_connect import *
 from tkinter import messagebox
 from teacherHome import *
 from Homepage import *
+from digiFaceStudent import *
 
 global studentColour
 studentColour = "#f2820d"
 
 class settingsStudent:
-    def __init__(self, sLogName):
+    def __init__(self,sal, sLogName,sID,sec):
         global settings1
         self.sLogName = sLogName
-        print((self.sLogName))
+        self.sID = sID
+        self.sal = sal
+        self.sec = sec
         settings1 = Toplevel()
         settings1.title("Settings")
-        settings1.geometry("310x240")
+        settings1.geometry("310x220")
+        settings1.resizable(width=FALSE, height= FALSE)
         self.gui_1()
         settings1.mainloop()
 
@@ -35,8 +39,8 @@ class settingsStudent:
                 if newPwd1 == newPwd2:
                     if newPwd1 != curPwd:
                         ###SQL COMMAND HERE
-                        mySql_insert_query = 'UPDATE students SET password = "{}" WHERE S_Name = "{}"'.format(
-                            newPwd1, self.sLogName)
+                        mySql_insert_query = 'UPDATE students SET password = "{}" WHERE S_Name = "{}" and S_ID = "{}"'.format(
+                            newPwd1, self.sLogName,self.sID)
                         cursor = connection.cursor()
                         cursor.execute(mySql_insert_query)
                         connection.commit()
@@ -124,14 +128,35 @@ class settingsStudent:
                                        icon='warning', parent=settings1)
         if cnfrm == 'yes':
             ###SQL COMMAND HERE
-            mySql_insert_query = 'DELETE FROM students WHERE S_Name = "{}"'.format(
-                self.sLogName)
+            # del from registration
+            sql = 'DELETE FROM students WHERE S_Name = "{}" and S_ID = "{}"'.format(
+                self.sLogName,self.sID)
             cursor = connection.cursor()
-            cursor.execute(mySql_insert_query)
+            cursor.execute(sql)
             connection.commit()
+            cursor.close()
+
+            #del from subjects
+            sql = 'DELETE FROM studentsubject WHERE Student_Name = "{}" and Student_ID = "{}"'.format(
+                self.sLogName,self.sID)
+            cursor = connection.cursor()
+            cursor.execute(sql)
+            connection.commit()
+            cursor.close()
+
             messagebox.showinfo("Account Deleted", "Your account has been deleted successfully", parent=settings1)
             settings1.destroy()
 
+    def dFace(self):
+        # checking if data already exists
+        mycursor = connection.cursor()
+        sql = 'SELECT * from digiFaceStudent where S_ID = "{}" '.format(self.sID)
+        mycursor.execute(sql)
+        dExists = mycursor.fetchall()
+        if dExists:
+            messagebox.showerror("Error", "DigiFace has already been setup", parent=settings1)
+        else:
+            d1 = digiFaceStudent1(self.sal, self.sLogName, self.sID,self.sec)
     def gui_1(self):
         self.settingsHeader = Label(settings1, text="Settings", bg=studentColour, fg='white',
                                     font=("Sans serif", 18, "bold"), pady=7)  # text add
@@ -149,7 +174,11 @@ class settingsStudent:
         self.delAcntBtn.pack()
         self.delAcntBtn.place(x=40, y=120)
 
+        # digiFace account
+        self.dFaceBtnIcon = PhotoImage(file="button_setUpDigifaceStudent.png")
+        self.dFaceBtn = Button(settings1, image=self.dFaceBtnIcon, borderwidth=0, command=self.dFace)
+        self.dFaceBtn.pack()
+        self.dFaceBtn.place(x=40, y=170)
 
 if __name__ == '__main__':
-    s1 = settingsStudent("")
-    s1
+    s1 = settingsStudent("","","")

@@ -45,7 +45,6 @@ class att:
         self.subject = self.sub1.get()
         self.date = self.cal1.get()
         self.hour = self.hr1.get()
-        print(self.sec,self.sub1,self.date,self.hour)
 
         if self.sec and self.subject and self.date and self.hour:
 
@@ -104,7 +103,6 @@ class att:
                         for self.ithStudent in self.students:
                             self.ithStudentName = self.ithStudent[0]
                             self.ithStudentID = self.ithStudent[1]
-                            print(self.ithStudentName, self.ithStudentID)
 
                             # Name Label
                             self.studentNameLbl[i] = Label(attSc, text=self.ithStudentName, font=("Sans Serif", 12))

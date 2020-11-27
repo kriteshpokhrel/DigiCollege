@@ -35,8 +35,8 @@ class teacherReg:
             else:
 
                 ###SQL COMMAND HERE
-                mySql_insert_query = 'INSERT INTO teachers VALUES ("{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}")' \
-                    .format(sal, name, id, dept, "None", dob, cno, addr, email, pwd4,"None")
+                mySql_insert_query = 'INSERT INTO teachers VALUES ("{}","{}","{}","{}","{}","{}","{}","{}","{}","{}")' \
+                    .format(sal, name, id, dept, "None", dob, cno, addr, email, pwd4)
                 cursor = connection.cursor()
                 cursor.execute(mySql_insert_query)
                 connection.commit()

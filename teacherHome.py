@@ -22,7 +22,7 @@ class tHome:
         self.gui_1(tLogName)
         tHome1.mainloop()
     def settingsOpen(self):
-        s1= settingsTeacher(self.logName,self.tID)
+        s1= settingsTeacher(self.sal,self.logName,self.tID)
         s1
     def classRoom(self):
         if connection.is_connected():
@@ -31,7 +31,6 @@ class tHome:
             my_conn.execute(sql)
             wName = my_conn.fetchone()
             self.sec1= wName[0]
-            print(self.sec1)
             if (self.sec1 == "None") or (self.sec1 == "none"):
                 messagebox.showerror("Error","You have not been appointed as class teacher of any section", parent = tHome1)
             else:
@@ -45,6 +44,7 @@ class tHome:
         as1
     def subjects(self):
         sub1= teacherSub(self.logName,self.tID)
+        sub1
     def gui_1(self,tLogName):
 
         #header
@@ -105,8 +105,6 @@ class tHome:
         self.sub = Label(tHome1, image=self.subPhoto)
         self.sub.pack()
         self.sub.place(x=x2Icn, y=y2Icn)
-
-
 
         # settings button
         self.settingsBtnIcon = PhotoImage(file ="button_settingsTeacher.png")
